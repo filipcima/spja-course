@@ -1,9 +1,6 @@
-
 import pygame
 from raptor_game.functions import load_image
-
-DIR_UP = 1
-DIR_DOWN = -1
+from raptor_game.functions import Direction
 
 
 class Bullet(pygame.sprite.Sprite):
@@ -16,13 +13,13 @@ class Bullet(pygame.sprite.Sprite):
         self.damage = 10
 
     def update(self):
-        if self.direction == DIR_DOWN:
-            move_y = 1
-        elif self.direction == DIR_UP:
-            move_y = -1
+        if self.direction == Direction.DOWN:
+            move_y = 3
+        elif self.direction == Direction.UP:
+            move_y = -3
 
         self.rect.move_ip(0, move_y)
 
         b_x, b_y = self.rect.center
-        if b_y <= 0:
+        if b_y <= 0 or b_y > 480:
             self.kill()

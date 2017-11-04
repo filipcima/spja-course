@@ -3,10 +3,8 @@ import pygame
 from pygame.locals import *
 
 from raptor_game.functions import load_image
-
-
-DIR_UP = 1
-DIR_DOWN = -1
+from raptor_game.functions import Direction
+from raptor_game.bullet import Bullet
 
 
 class Raptor(pygame.sprite.Sprite):
@@ -19,7 +17,8 @@ class Raptor(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image, self.rect = load_image(self.images['straight'], -1)
         self.rect.center = pos
-        self.x_dist, self.y_dist = 5, 5
+        self.x_dist, self.y_dist = 7, 7
+        self.health = 100
 
     def update(self, event):
         move_x = 0
@@ -48,6 +47,5 @@ class Raptor(pygame.sprite.Sprite):
         self.rect.move_ip(move_x, move_y)
 
     def create_bullet(self):
-        from raptor_game.bullet import Bullet
-        bullet = Bullet(self.rect.center, DIR_UP)
+        bullet = Bullet(self.rect.center, Direction.UP)
         return bullet
