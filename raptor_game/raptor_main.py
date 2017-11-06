@@ -14,7 +14,7 @@ if not pygame.mixer:
 
 class RaptorMain:
 
-    def __init__(self, width=600, height=480):
+    def __init__(self, width=800, height=600):
         pygame.init()
         self.width = width
         self.height = height
@@ -25,15 +25,13 @@ class RaptorMain:
         self.background = pygame.Surface(self.screen.get_size())
         self.background = self.background.convert()
 
-        MAX_STARS = 250
-
+        max_stars = 250
         self.stars = []
 
-        for i in range(MAX_STARS):
+        for i in range(max_stars):
             rand_x = randrange(0, self.screen.get_width())
             rand_y = randrange(0, self.screen.get_height())
             speed = choice([1, 1.5, 2])
-
             star = Star(rand_x, rand_y, speed)
 
             self.stars.append(star)
@@ -91,13 +89,13 @@ class RaptorMain:
         self.player_bullet_sprites.update()
         self.enemy_bullet_sprites.update()
 
-        if random() < 0.02:
+        if random() < 0.02: # priblizne 1 z 50
             if Enemy.enemies_count < 10:
                 self.enemy_sprites.add(Enemy((random() * self.width, random() * self.height / -2)))
                 Enemy.enemies_count += 1
 
         for enemy in self.enemy_sprites:
-            if random() < 0.01:
+            if random() < 0.01: # priblizne 1 ze 100
                 self.enemy_bullet_sprites.add(enemy.create_bullet())
 
         for bullet in self.player_bullet_sprites:
@@ -135,7 +133,7 @@ class RaptorMain:
                     self.player_bullet_sprites.add(self.raptor.create_bullet())
 
     def main_loop(self):
-        pygame.key.set_repeat(500, 20)
+        pygame.key.set_repeat(500, 10)
 
         self.init_background()
         self.load_sprites()
@@ -147,7 +145,7 @@ class RaptorMain:
 
     def load_sprites(self):
         self.raptor = Raptor((self.width / 2, self.height - 80,))
-        self.raptor_sprites = pygame.sprite.RenderPlain((self.raptor))
+        self.raptor_sprites = pygame.sprite.RenderPlain(self.raptor)
         self.enemy_sprites = pygame.sprite.RenderPlain()
         self.player_bullet_sprites = pygame.sprite.RenderPlain()
         self.enemy_bullet_sprites = pygame.sprite.RenderPlain()

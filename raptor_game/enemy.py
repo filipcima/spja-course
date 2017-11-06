@@ -2,6 +2,7 @@ import pygame
 from raptor_game.functions import load_image
 from raptor_game.functions import Direction
 from raptor_game.bullet import Bullet
+
 from random import randrange, random
 
 
@@ -25,7 +26,7 @@ class Enemy(pygame.sprite.Sprite):
         self.pos = (pos_x, pos_y,)
         self.rect.center = (round(pos_x), round(pos_y))
 
-        if pos_y > 480:
+        if pos_y > 600:
             self.kill()
             Enemy.enemies_count -= 1
 

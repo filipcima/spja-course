@@ -13,6 +13,8 @@ class Bullet(pygame.sprite.Sprite):
         self.damage = 10
 
     def update(self):
+        move_y = 0
+
         if self.direction == Direction.DOWN:
             move_y = 3
         elif self.direction == Direction.UP:
@@ -21,5 +23,5 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.move_ip(0, move_y)
 
         b_x, b_y = self.rect.center
-        if b_y <= 0 or b_y > 480:
+        if b_y <= 0 or b_y > 600:
             self.kill()
