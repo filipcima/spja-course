@@ -1,17 +1,19 @@
 import sys
 import pygame
 from pygame.locals import *
-
-from random import randrange, choice, random
-
 from raptor_game.raptor import Raptor
 from raptor_game.enemy import Enemy
+from raptor_game.star import Star
+from random import randrange, choice, random
 
-if not pygame.font: print('Warning, fonts disabled')
-if not pygame.mixer: print('Warning, sound disabled')
+if not pygame.font:
+    print('Warning, fonts disabled')
+if not pygame.mixer:
+    print('Warning, sound disabled')
 
 
 class RaptorMain:
+
     def __init__(self, width=600, height=480):
         pygame.init()
         self.width = width
@@ -20,51 +22,67 @@ class RaptorMain:
         self.score = 0
 
     def init_background(self):
+        self.background = pygame.Surface(self.screen.get_size())
+        self.background = self.background.convert()
+
         MAX_STARS = 250
 
         self.stars = []
+
         for i in range(MAX_STARS):
-            star = [randrange(0, self.screen.get_width() - 1),
-                    randrange(0, self.screen.get_width() - 1),
-                    choice([1, 1.5, 2])
-                    ]
+            rand_x = randrange(0, self.screen.get_width())
+            rand_y = randrange(0, self.screen.get_height())
+            speed = choice([1, 1.5, 2])
+
+            star = Star(rand_x, rand_y, speed)
+
             self.stars.append(star)
 
     def move_stars(self):
         for star in self.stars:
-            star[1] += star[2] #pohyb hvezdy smerem dolu
+            star.pos_y += star.speed
 
-            if star[1] >= self.screen.get_height():
-                star[1] = 0
-                star[0] = randrange(0, self.screen.get_width() - 1)
+            if star.pos_y >= self.screen.get_height():
+                star.pos_y = 0
+                star.pos_x = randrange(0, self.screen.get_width())
 
-            if star[2] == 1:
+            if star.speed == 1:
                 color = (100, 100, 100)
-            elif star[2] == 1.5:
+            elif star.speed == 1.5:
                 color = (190, 190, 190)
-            elif star[2] == 2:
+            elif star.speed == 2:
                 color = (255, 255, 255)
 
-            self.screen.fill(color, (star[0], star[1], star[2], star[2]))
-
+            self.screen.fill(color, (star.pos_x, star.pos_y, star.speed, star.speed))
 
     def draw(self):
         self.screen.blit(self.background, (0, 0))
-
         self.move_stars()
         self.raptor_sprites.draw(self.screen)
         self.enemy_sprites.draw(self.screen)
 
-        if self.enemy_bullet_sprites is not None:  # is not VS !=
+        if self.enemy_bullet_sprites is not None:
             self.enemy_bullet_sprites.draw(self.screen)
-        if self.player_bullet_sprites is not None:  # is not VS !=
+        if self.player_bullet_sprites is not None:
             self.player_bullet_sprites.draw(self.screen)
 
         if pygame.font:
             font = pygame.font.Font(None, 36)
-            text = font.render('Score: {}'.format(self.score), 1, (255, 0, 0))
-            textpos = text.get_rect(centerx=self.width/2)
-            self.screen.blit(text, textpos)
+
+            score = font.render('Score: {}'.format(self.score), 1, (255, 0, 0))
+            textpos = score.get_rect(centerx=self.width/2)
+
+            health = font.render('HP: {}/100'.format(self.raptor.health), 1, (255, 0, 0))
+            textpos2 = health.get_rect(centery=self.height - 10)
+
+            if self.raptor.health <= 0:
+                font = pygame.font.Font(None, 56)
+                game_over = font.render('Game Over', 1, (255, 255, 255))
+                textpos3 = game_over.get_rect(centerx=self.width/2, centery=self.height/2)
+                self.screen.blit(game_over, textpos3)
+
+            self.screen.blit(score, textpos)
+            self.screen.blit(health, textpos2)
 
         pygame.display.flip()
 
@@ -77,7 +95,7 @@ class RaptorMain:
             if Enemy.enemies_count < 10:
                 self.enemy_sprites.add(Enemy((random() * self.width, random() * self.height / -2)))
                 Enemy.enemies_count += 1
-                print(Enemy.enemies_count)
+
         for enemy in self.enemy_sprites:
             if random() < 0.01:
                 self.enemy_bullet_sprites.add(enemy.create_bullet())
@@ -106,7 +124,6 @@ class RaptorMain:
             if lst_cols:
                 bullet.kill()
 
-
     def handle_keys(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -119,9 +136,6 @@ class RaptorMain:
 
     def main_loop(self):
         pygame.key.set_repeat(500, 20)
-        
-        self.background = pygame.Surface(self.screen.get_size())
-        self.background = self.background.convert()
 
         self.init_background()
         self.load_sprites()
@@ -130,7 +144,6 @@ class RaptorMain:
             self.handle_keys()
             self.update_scene()
             self.draw()
-
 
     def load_sprites(self):
         self.raptor = Raptor((self.width / 2, self.height - 80,))
